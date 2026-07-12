@@ -1,42 +1,36 @@
-from fastapi import FastAPI
+class Doc:
+    """Define the documentation of a type annotation using `Annotated`, to be
+        used in class attributes, function and method parameters, return values,
+        and variables.
 
-from app.routes import resume,ats,jobs, interview, dsa, auth
+    The value should be a positional-only string literal to allow static tools
+    like editors and documentation generators to use it.
 
+    This complements docstrings.
 
-app=FastAPI(
-    title="Prepo AI Career Assistant"
-)
+    The string value passed is available in the attribute `documentation`.
 
+    Example:
 
+    ```Python
+    from typing import Annotated
+    from annotated_doc import Doc
 
-app.include_router(
-    resume.router
-)
+    def hi(name: Annotated[str, Doc("Who to say hi to")]) -> None:
+        print(f"Hi, {name}!")
+    ```
+    """
 
-app.include_router(
-    ats.router
-)
+    def __init__(self, documentation: str, /) -> None:
+        self.documentation = documentation
 
-app.include_router(
-    jobs.router
-)
+    def __repr__(self) -> str:
+        return f"Doc({self.documentation!r})"
 
-app.include_router(
-    interview.router
-)
+    def __hash__(self) -> int:
+        return hash(self.documentation)
 
-app.include_router(
-    dsa.router
-)
-
-app.include_router(
-    auth.router
-)
-
-@app.get("/")
-def home():
-
-    return {
-        "message":
-        "Prepo Backend Running"
-    }
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Doc):
+            return NotImplemented
+        return self.documentation == other.documentation
